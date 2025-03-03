@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC配信テスト - 配信側</title>
+    <link rel="stylesheet" href="stream-styles.css">
+</head>
+<body>
+    <div class="container broadcaster">
+        <header>
+            <h1>ライブ配信 - 配信側</h1>
+            <div class="status-container">
+                <span id="connection-status" class="status offline">オフライン</span>
+            </div>
+        </header>
+        
+        <main>
+            <div class="video-container">
+                <video id="local-video" autoplay muted playsinline></video>
+                <div class="video-overlay" id="overlay-message">カメラへのアクセスを許可してください</div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <button id="start-stream" class="btn primary">配信開始</button>
+                    <button id="stop-stream" class="btn danger" disabled>配信停止</button>
+                </div>
+                
+                <div class="settings">
+                    <div class="setting">
+                        <label for="whip-url">WHIPエンドポイントURL:</label>
+                        <input type="text" id="whip-url" placeholder="Cloudflare Stream WHIPエンドポイントを入力" 
+                        value="https://customer-px4ru5rucxtgoo68.cloudflarestream.com/b6b5bc7ca9532fb75876b6bc23b36148k01f4aefe1fe23d3a314b8289b472dafe/webRTC/publish">
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="info-panel">
+            <div class="stream-info">
+                <h3>配信情報</h3>
+                <p>解像度: <span id="resolution">-</span></p>
+                <p>ビットレート: <span id="bitrate">-</span></p>
+                <p>経過時間: <span id="elapsed-time">00:00:00</span></p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>WebRTC配信テスト - Cloudflare Stream利用</p>
+            <p><a href="viewer.html" target="_blank">視聴ページを開く</a></p>
+        </footer>
+    </div>
+
+    <script src="WHIPClient.js" type="module"></script>
+    <script src="negotiateConnectionWithClientOffer.js" type="module"></script>
+    <script src="broadcaster.js" type="module"></script>
+</body>
+</html>

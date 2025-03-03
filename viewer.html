@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC配信テスト - 視聴側</title>
+    <link rel="stylesheet" href="stream-styles.css">
+</head>
+<body>
+    <div class="container viewer">
+        <header>
+            <h1>ライブ配信 - 視聴側</h1>
+            <div class="status-container">
+                <span id="connection-status" class="status offline">未接続</span>
+            </div>
+        </header>
+        
+        <main>
+            <div class="video-container">
+                <video id="remote-video" autoplay controls playsinline></video>
+                <div class="video-overlay" id="overlay-message">配信に接続していません</div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <button id="start-viewing" class="btn primary">視聴開始</button>
+                    <button id="stop-viewing" class="btn secondary" disabled>視聴停止</button>
+                </div>
+                
+                <div class="settings">
+                    <div class="setting">
+                        <label for="whep-url">WHEPエンドポイントURL:</label>
+                        <input type="text" id="whep-url" placeholder="Cloudflare Stream WHEPエンドポイントを入力" 
+                        value="https://customer-px4ru5rucxtgoo68.cloudflarestream.com/01f4aefe1fe23d3a314b8289b472dafe/webRTC/play">
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="info-panel">
+            <div class="stream-info">
+                <h3>視聴情報</h3>
+                <p>解像度: <span id="resolution">-</span></p>
+                <p>接続品質: <span id="connection-quality">-</span></p>
+                <p>視聴時間: <span id="viewing-time">00:00:00</span></p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>WebRTC配信テスト - Cloudflare Stream利用</p>
+            <p><a href="broadcaster.html" target="_blank">配信ページに戻る</a></p>
+        </footer>
+    </div>
+
+    <script src="WHEPClient.js" type="module"></script>
+    <script src="negotiateConnectionWithClientOffer.js" type="module"></script>
+    <script src="viewer.js" type="module"></script>
+</body>
+</html>
