@@ -47,22 +47,8 @@ startViewingBtn.addEventListener('click', async () => {
         
         // 失敗時にリセット
         resetViewing();
-    } catch (error) {
-        console.error('統計情報の取得エラー:', error);
     }
-}
-
-// ページロード時に初期表示を設定
-document.addEventListener('DOMContentLoaded', () => {
-    resetViewing();
 });
-
-// ページ離脱時の処理
-window.addEventListener('beforeunload', () => {
-    if (viewingActive && whepClient) {
-        resetViewing();
-    }
-}););
 
 // 視聴停止ボタン
 stopViewingBtn.addEventListener('click', () => {
@@ -234,3 +220,19 @@ async function updateMediaStats() {
             resolutionDisplay.textContent = '-';
             connectionQualityDisplay.textContent = '接続中...';
         }
+    } catch (error) {
+        console.error('統計情報の取得エラー:', error);
+    }
+}
+
+// ページロード時に初期表示を設定
+document.addEventListener('DOMContentLoaded', () => {
+    resetViewing();
+});
+
+// ページ離脱時の処理
+window.addEventListener('beforeunload', () => {
+    if (viewingActive && whepClient) {
+        resetViewing();
+    }
+});

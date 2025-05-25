@@ -159,7 +159,7 @@ async function updateMediaStats() {
                 resolutionDisplay.textContent = `${settings.width}x${settings.height}`;
             }
             
-            // ビットレート情報（擬似的な表示）
+            // ビットレート情報の取得
             const stats = await whipClient.peerConnection.getStats();
             let outboundRtpStats = null;
             
@@ -173,10 +173,17 @@ async function updateMediaStats() {
                 // 簡易的なビットレート計算（正確ではない）
                 const kbps = Math.round(outboundRtpStats.bytesSent * 8 / 1000);
                 bitrateDisplay.textContent = `約 ${kbps} kbps`;
+            } else {
+                bitrateDisplay.textContent = '計算中...';
             }
+        } else {
+            resolutionDisplay.textContent = '-';
+            bitrateDisplay.textContent = '-';
         }
     } catch (error) {
         console.error('統計情報の取得エラー:', error);
+        resolutionDisplay.textContent = 'エラー';
+        bitrateDisplay.textContent = 'エラー';
     }
 }
 
