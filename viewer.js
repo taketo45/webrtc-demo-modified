@@ -21,28 +21,46 @@ let connectionCheckInterval = null;
 
 // 視聴開始ボタン
 startViewingBtn.addEventListener('click', async () => {
-    if (viewingActive) return;
+    console.log('視聴開始ボタンがクリックされました');
+    
+    if (viewingActive) {
+        console.log('既に視聴中です');
+        return;
+    }
     
     const whepUrl = whepUrlInput.value.trim();
+    console.log('WHEP URL:', whepUrl);
+    
     if (!whepUrl) {
+        console.log('WHEP URLが空です');
         alert('WHEPエンドポイントURLを入力してください');
         return;
     }
     
     try {
+        console.log('接続処理を開始します...');
+        
         // ステータス更新
         connectionStatus.textContent = '接続中...';
         connectionStatus.className = 'status connecting';
         overlayMessage.textContent = '配信に接続中...';
         
+        console.log('WHEPClientを作成します...');
+        
+        // WHEPクライアント作成前にログ
+        console.log('WHEPClient import check:', typeof WHEPClient);
+        
         // WHEPクライアント作成
         whepClient = new WHEPClient(whepUrl, remoteVideo);
+        console.log('WHEPClient作成完了:', whepClient);
         
         // 接続状態をモニタリング
+        console.log('接続監視を開始します...');
         startConnectionMonitoring();
         
     } catch (error) {
-        console.error('視聴開始エラー:', error);
+        console.error('視聴開始エラー - 詳細:', error);
+        console.error('エラースタック:', error.stack);
         alert(`視聴の開始に失敗しました: ${error.message}`);
         
         // 失敗時にリセット
@@ -102,6 +120,7 @@ function startConnectionMonitoring() {
         if (!whepClient || !whepClient.peerConnection) return;
         
         const state = whepClient.peerConnection.connectionState;
+        console.log('接続状態:', state);
         
         if (state === 'connected') {
             if (!viewingActive) {
@@ -114,17 +133,17 @@ function startConnectionMonitoring() {
                 startViewingBtn.disabled = true;
                 stopViewingBtn.disabled = false;
                 
-                // 計測開始
+                // タイマー開始
                 startTimers();
+                
+                console.log('視聴が正常に開始されました');
             }
-        } else if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+        } else if (state === 'disconnected' || state === 'failed') {
+            console.log('接続が切断されました:', state);
             resetViewing();
-            alert('配信との接続が切断されました。');
-            
-            if (connectionCheckInterval) {
-                clearInterval(connectionCheckInterval);
-                connectionCheckInterval = null;
-            }
+        } else if (state === 'connecting') {
+            connectionStatus.textContent = '接続中...';
+            connectionStatus.className = 'status connecting';
         }
     }, 1000);
 }
@@ -133,11 +152,44 @@ function startConnectionMonitoring() {
 function startTimers() {
     startTime = new Date();
     
-    // 視聴時間の更新
-    viewingTimeInterval = setInterval(updateViewingTime, 1000);
+    // 視聴時間更新タイマー
+    if (viewingTimeInterval) {
+        clearInterval(viewingTimeInterval);
+    }
     
-    // メディア統計の更新
-    statsInterval = setInterval(updateMediaStats, 2000);
+    viewingTimeInterval = setInterval(() => {
+        if (startTime) {
+            const elapsed = new Date() - startTime;
+            const hours = Math.floor(elapsed / 3600000);
+            const minutes = Math.floor((elapsed % 3600000) / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            viewingTimeDisplay.textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+    
+    // 統計情報更新タイマー
+    if (statsInterval) {
+        clearInterval(statsInterval);
+    }
+    
+    statsInterval = setInterval(async () => {
+        if (!whepClient || !whepClient.peerConnection) return;
+        
+        try {
+            const stats = await whepClient.peerConnection.getStats();
+            stats.forEach(report => {
+                if (report.type === 'inbound-rtp' && report.mediaType === 'video') {
+                    if (report.frameWidth && report.frameHeight) {
+                        resolutionDisplay.textContent = `${report.frameWidth}x${report.frameHeight}`;
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('統計情報取得エラー:', error);
+        }
+    }, 5000);
 }
 
 // タイマーの停止
@@ -156,20 +208,8 @@ function stopTimers() {
         clearInterval(connectionCheckInterval);
         connectionCheckInterval = null;
     }
-}
-
-// 視聴時間の更新
-function updateViewingTime() {
-    if (!startTime) return;
     
-    const now = new Date();
-    const diff = now - startTime;
-    
-    const hours = Math.floor(diff / 3600000).toString().padStart(2, '0');
-    const minutes = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-    const seconds = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-    
-    viewingTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    startTime = null;
 }
 
 // メディア統計情報の更新
@@ -235,4 +275,20 @@ window.addEventListener('beforeunload', () => {
     if (viewingActive && whepClient) {
         resetViewing();
     }
+});
+
+// ページ読み込み時のログ
+console.log('viewer.js が読み込まれました');
+console.log('DOM要素の確認:', {
+    startViewingBtn: !!startViewingBtn,
+    stopViewingBtn: !!stopViewingBtn,
+    remoteVideo: !!remoteVideo,
+    connectionStatus: !!connectionStatus,
+    whepUrlInput: !!whepUrlInput
+});
+
+// WHEPClient のインポート確認
+window.addEventListener('load', () => {
+    console.log('ページ読み込み完了');
+    console.log('WHEPClient availability:', typeof WHEPClient);
 });
