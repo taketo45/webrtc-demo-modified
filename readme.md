@@ -27,13 +27,13 @@
 2. Stream > ライブ入力 に移動
 3. 新しいライブ入力を作成
 4. 「WebRTC」タブでWHIPエンドポイントURLを取得（配信用）
-https://customer-8s5fon3rk66g16ih.cloudflarestream.com/ad215ae3c2262856e29a2f61ad1e9584k04e20ce8fb0315ffaad55d108ba29581/webRTC/publish
+https://customer-8s5fon3rk66g16ih.cloudflarestream.com/ad215ae3c2262856e29a2f61ad1e9584kxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/webRTC/publish
 
 broadcaster.htmlのWHIPエンドポイントURLのvalueを取得したURLで更新
 
 5. 「ライブ再生と録音」を有効化
 6. WebRTC再生URLを取得（WebRTC (WHEP) 再生 URL）
-https://customer-8s5fon3rk66g16ih.cloudflarestream.com/04e20ce8fb0315ffaad55d108ba29581/webRTC/play
+https://customer-8s5fon3rk66g16ih.cloudflarestream.com/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/webRTC/play
 
 viewer.htmlのWHEPエンドポイントURLのvalueを取得したURLで更新
 
